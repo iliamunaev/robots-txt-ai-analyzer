@@ -1,6 +1,6 @@
 # Robots.txt AI Analyzer
 
-A modern web application that fetches and intelligently analyzes any website's `robots.txt` file using OpenAI's GPT models. Features a beautiful, responsive interface with structured AI insights.
+A web application that fetches and intelligently analyzes any website's `robots.txt` file using OpenAI's GPT models.
 
 ---
 
