@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robots.txt AI Analyzer</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-soft: #11162a;
+      --card: #0f1530;
+      --text: #e8ebf7;
+      --muted: #9aa4c7;
+      --brand: #6c8cff;
+      --brand-2: #9a7cff;
+      --ok: #12b886;
+      --warn: #ffd166;
+      --err: #ff6b6b;
+      --border: rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 10% -20%, rgba(108,140,255,.25), transparent 60%),
+                  radial-gradient(1000px 700px at 100% 0%, rgba(154,124,255,.18), transparent 50%),
+                  var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .logo {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      display: grid; place-items: center; box-shadow: var(--shadow);
+      color: white; font-weight: 800; letter-spacing: .5px;
+    }
+    .title h1 { margin: 0; font-size: 1.25rem; }
+    .title p { margin: 2px 0 0; color: var(--muted); font-size: .95rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .card h2 {
+      margin: 2px 0 12px; font-size: 1rem; font-weight: 700;
+      color: var(--text);
+    }
+
+    .stack { display: grid; gap: 12px; }
+
+    label { font-size: .85rem; color: var(--muted); }
+
+    .input-row { display: grid; gap: 10px; }
+
+    .field {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 12px;
+    }
+    .field input[type="text"] {
+      flex: 1; background: transparent; border: 0; outline: none; color: var(--text);
+      font-size: 0.98rem;
+    }
+
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn {
+      appearance: none; border: 0; cursor: pointer;
+      padding: 10px 14px; border-radius: 12px; font-weight: 600; font-size: .95rem;
+      color: white; background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: var(--shadow); transition: transform .12s ease, filter .2s ease, opacity .2s ease;
+    }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); box-shadow: none; }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .8rem; background: var(--bg-soft); border: 1px solid var(--border);
+      padding: 2px 6px; border-radius: 6px; color: var(--muted);
+    }
+
+    .status {
+      display: inline-flex; align-items: center; gap: 8px; font-size: .85rem;
+      background: rgba(18, 184, 134, .1); color: var(--ok);
+      border: 1px solid rgba(18, 184, 134, .3); padding: 6px 10px; border-radius: 999px;
+    }
+    .status.warn { background: rgba(255, 209, 102, .12); color: #ffcf56; border-color: rgba(255, 209, 102, .35); }
+    .status.err { background: rgba(255, 107, 107, .12); color: #ff8d8d; border-color: rgba(255, 107, 107, .35); }
+
+    .pane { display: grid; gap: 12px; }
+
+    .surface {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 220px;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      white-space: pre-wrap; word-break: break-word; font-size: .9rem; line-height: 1.5;
+    }
+
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+    .muted { color: var(--muted); }
+
+    .skeleton { position: relative; overflow: hidden; }
+    .skeleton::after {
+      content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+      animation: shimmer 1.4s infinite; transform: translateX(-100%);
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    .footer { margin-top: 18px; color: var(--muted); font-size: .85rem; display: flex; gap: 8px; align-items: center; }
+    .footer a { color: var(--muted); }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--muted); font-size: .8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">🤖</div>
+        <div class="title">
+          <h1>Robots.txt AI Analyzer</h1>
+          <p>Simple, clean, and fast way to inspect <span class="kbd">/robots.txt</span> with AI hints</p>
+        </div>
+      </div>
+      <div class="chip" title="Keyboard shortcut">
+        Press <span class="kbd">Enter</span> to analyze
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Left: Controls -->
+      <section class="card stack">
+        <h2>Input</h2>
+        <div class="input-row">
+          <label for="website">Website URL</label>
+          <div class="field">
+            <span class="muted">https://</span>
+            <input id="website" type="text" placeholder="example.com" value="www.kone.fi" />
+          </div>
+          <div class="row">
+            <button id="analyzeBtn" class="btn" onclick="analyzeWebsite()">Analyze robots.txt</button>
+            <button class="btn secondary" onclick="useExample('example.com')">Use example</button>
+            <button class="btn secondary" onclick="pasteFromClipboard()">Paste from clipboard</button>
+          </div>
+        </div>
+
+        <div id="notice" class="status warn" style="display:none;">
+          <span>Heads‑up:</span> This tool fetches <span class="kbd">/robots.txt</span> and sends it for AI analysis.
+        </div>
+      </section>
+
+      <!-- Right: Results -->
+      <section class="pane stack">
+        <div class="card stack">
+          <div class="toolbar">
+            <h2>Robots.txt</h2>
+            <div class="row">
+              <span id="siteBadge" class="chip" style="display:none;"></span>
+              <button class="btn secondary" onclick="copyRobots()">Copy</button>
+            </div>
+          </div>
+          <div id="robotsBox" class="surface mono muted">Enter a URL and click Analyze</div>
+        </div>
+
+        <div class="card stack">
+          <div class="toolbar">
+            <h2>AI Analysis</h2>
+            <button class="btn secondary" onclick="copyAnalysis()">Copy</button>
+          </div>
+          <div id="aiBox" class="surface muted">Insights will appear here after analysis.</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer">
+      <span>Pro tip: Hit <span class="kbd">Enter</span> after typing the domain.</span>
+      <span>•</span>
+      <span>Last checked: <span id="lastChecked" class="muted">—</span></span>
+    </div>
+  </div>
+
+  <script>
+    const qs = (s) => document.querySelector(s);
+    const websiteInput = qs('#website');
+    const analyzeBtn = qs('#analyzeBtn');
+    const robotsBox = qs('#robotsBox');
+    const aiBox = qs('#aiBox');
+    const siteBadge = qs('#siteBadge');
+    const lastChecked = qs('#lastChecked');
+    const notice = qs('#notice');
+
+    // Restore last URL
+    const last = localStorage.getItem('robots_url');
+    if (last) websiteInput.value = last;
+
+    websiteInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') analyzeWebsite();
+    });
+
+    function normalizeUrl(raw){
+      let v = (raw || '').trim();
+      if (!v) return '';
+      if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+      // Only keep origin + /robots.txt for display badge
+      try {
+        const u = new URL(v);
+        return u.origin;
+      } catch { return v; }
+    }
+
+    function setLoading(isLoading){
+      analyzeBtn.disabled = isLoading;
+      analyzeBtn.textContent = isLoading ? 'Analyzing…' : 'Analyze robots.txt';
+      robotsBox.classList.toggle('skeleton', isLoading);
+      aiBox.classList.toggle('skeleton', isLoading);
+      if (isLoading) {
+        robotsBox.textContent = 'Fetching /robots.txt…';
+        aiBox.textContent = 'Generating AI insights…';
+      }
+    }
+
+    function useExample(host){
+      websiteInput.value = host;
+      websiteInput.focus();
+    }
+
+    async function pasteFromClipboard(){
+      try {
+        const t = await navigator.clipboard.readText();
+        if (t) websiteInput.value = t.trim();
+      } catch {}
+    }
+
+    function escapeHTML(str){
+      return str.replace(/[&<>\"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
+    }
+
+    function showError(msg){
+      setLoading(false);
+      const html = `<div class="status err">❌ ${escapeHTML(msg)}</div>`;
+      robotsBox.classList.remove('skeleton');
+      aiBox.classList.remove('skeleton');
+      robotsBox.innerHTML = html;
+      aiBox.innerHTML = html;
+    }
+
+    function stamp(){
+      const d = new Date();
+      lastChecked.textContent = d.toLocaleString();
+    }
+
+    function showRobots(host, content){
+      siteBadge.style.display = 'inline-flex';
+      siteBadge.textContent = host + '/robots.txt';
+      robotsBox.classList.remove('skeleton');
+      robotsBox.classList.remove('muted');
+      robotsBox.innerHTML = `<pre class="mono" style="margin:0;">${escapeHTML(content || '—')}</pre>`;
+    }
+
+         function formatAI(md){
+       // Enhanced formatting for structured AI responses
+       let safe = escapeHTML(md || '');
+
+       // Format section headers
+       safe = safe
+         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+         .replace(/\*(.*?)\*/g, '<em>$1</em>')
+         .replace(/\n\n/g, '</p><p>')
+         .replace(/\n/g, '<br/>')
+         .replace(/^(.*?)$/m, '<p>$1</p>')
+         .replace(/<p><\/p>/g, '');
+
+       // Highlight important robots.txt terms
+       safe = safe
+         .replace(/(User-agent:|Disallow:|Allow:|Crawl-delay:)/gi, '<span style="background:rgba(108,140,255,.15); padding:2px 6px; border-radius:6px; color:var(--brand); font-weight:600;">$1</span>');
+
+       // Style bullet points
+       safe = safe
+         .replace(/•/g, '<span style="color:var(--brand); margin-right:8px;">•</span>');
+
+       // Style emojis in headers
+       safe = safe
+         .replace(/(🤖|🚫|✅|💡|📊)/g, '<span style="font-size:1.2em; margin-right:8px;">$1</span>');
+
+       return safe;
+     }
+
+         function showAI(text){
+       aiBox.classList.remove('skeleton');
+       aiBox.classList.remove('muted');
+       aiBox.innerHTML = `<div style="line-height:1.6;">${formatAI(text)}</div>`;
+     }
+
+    async function analyzeWebsite(){
+      const host = normalizeUrl(websiteInput.value);
+      if (!host) return showError('Please enter a website URL.');
+
+      localStorage.setItem('robots_url', websiteInput.value.trim());
+      notice.style.display = 'inline-flex';
+      setLoading(true);
+
+      try {
+        const res = await fetch('/analyze', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ website: host })
+        });
+        const data = await res.json();
+        if (!data || !data.success) throw new Error(data?.error || 'Analysis failed');
+
+        showRobots(data.website || host, data.robots_content || '');
+        showAI(data.ai_analysis || 'No analysis available.');
+        stamp();
+      } catch (e) {
+        showError(e.message || 'Network error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function copyRobots(){
+      const txt = robotsBox.innerText || '';
+      try { await navigator.clipboard.writeText(txt); flash('Robots copied'); } catch {}
+    }
+
+    async function copyAnalysis(){
+      const txt = aiBox.innerText || '';
+      try { await navigator.clipboard.writeText(txt); flash('Analysis copied'); } catch {}
+    }
+
+    function flash(message){
+      const el = document.createElement('div');
+      el.textContent = message;
+      el.style.position = 'fixed';
+      el.style.right = '16px';
+      el.style.bottom = '16px';
+      el.style.padding = '10px 12px';
+      el.style.borderRadius = '10px';
+      el.style.background = 'rgba(15,21,48,.95)';
+      el.style.border = '1px solid var(--border)';
+      el.style.color = 'var(--text)';
+      el.style.boxShadow = 'var(--shadow)';
+      el.style.zIndex = '9999';
+      document.body.appendChild(el);
+      setTimeout(()=>{ el.remove(); }, 1400);
+    }
+  </script>
+</body>
+</html>
