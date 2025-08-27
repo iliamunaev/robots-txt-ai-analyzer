@@ -1,10 +1,10 @@
-# 🤖 Robots.txt AI Analyzer
+# Robots.txt AI Analyzer
 
 A modern web application that fetches and intelligently analyzes any website's `robots.txt` file using OpenAI's GPT models. Features a beautiful, responsive interface with structured AI insights.
 
 ---
 
-## ✨ Features
+## Features
 
 - ** Web Interface**: Clean, modern web app accessible from any browser
 - ** Responsive Design**: Works perfectly on desktop, tablet, and mobile
