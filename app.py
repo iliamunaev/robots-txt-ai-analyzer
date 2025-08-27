@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from robot_txt_analyzer import analyze_website_robots, fetch_robots_txt, analyze_robots_txt, analyze_robots_txt_with_structured_prompt
+from analyzer import analyze_website_robots, fetch_robots_txt, analyze_robots_txt, analyze_robots_txt_with_structured_prompt
 import os
 from dotenv import load_dotenv
 

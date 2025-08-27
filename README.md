@@ -1,103 +1,95 @@
-# robots-txt-ai-analyzer
+# 🤖 Robots.txt AI Analyzer
 
-A Python tool to fetch and explain any website's `robots.txt` file using OpenAI's GPT models.
-
----
-
-## What is robots.txt?
-
-A `robots.txt` file is a standard used by websites to communicate with web crawlers (also known as web robots, wanderers, spiders). It tells these bots which parts of the site they are allowed or not allowed to access. This is called the Robots Exclusion Protocol.
-
-- **User-agent:** Specifies which robot the rule applies to (e.g., `*` means all robots).
-- **Disallow:** Tells the robot not to visit certain pages or directories.
-- **Allow:** (Optional) Tells the robot it can visit specific pages, even if a broader disallow rule exists.
-
-For more details:
-- [Robots Exclusion Protocol](https://www.robotstxt.org/)
-- [Original Specification](https://www.robotstxt.org/orig.html)
-- [Google's Guide](https://developers.google.com/search/docs/crawling-indexing/robots/create-robots-txt#create_rules)
+A modern web application that fetches and intelligently analyzes any website's `robots.txt` file using OpenAI's GPT models. Features a beautiful, responsive interface with structured AI insights.
 
 ---
 
-## How it works
+## ✨ Features
 
-This tool:
-1. Downloads the `robots.txt` file from any website.
-2. Uses OpenAI's GPT model to generate a human-readable summary of the rules.
-
----
-
-## Usage
-
-1. **Set your OpenAI API key**
-   Create a `.env` file in the project directory with:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
-
-2. **Run the script**
-   Example:
-   ```bash
-   python robot_txt_analyzer.py
-   ```
-   By default, the script fetches and explains the `robots.txt` for `www.kone.fi`.
-   You can modify the script to analyze any site by changing the URL in the last line.
+- ** Web Interface**: Clean, modern web app accessible from any browser
+- ** Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- ** AI-Powered Analysis**: Structured, human-readable explanations using OpenAI GPT
+- ** Beautiful UI**: Dark theme with smooth animations and professional styling
+- ** Three-Window Layout**:
+  - Input panel for website URLs
+  - Raw robots.txt content display
+  - Formatted AI analysis with insights
+- ** Real-time Analysis**: Instant results with loading states
+- ** Copy Functionality**: Easy copying of both robots.txt content and AI analysis
+- ** URL Memory**: Remembers your last analyzed website
 
 ---
 
-## Example Output
-Analyzing robots.txt for: www.kone.fi
-Status: Successfully fetched robots.txt (692 characters)
+## Quick Start
 
-AI Analysis:
-==================================================
-### Summary of robots.txt Rules
+### 1. **Clone the Repository**
+```bash
+git clone https://github.com/iliamunaev/robots-txt-ai-analyzer.git
+cd robots-txt-ai-analyzer
+```
 
-1. **User-Agent: Swiftbot**
-   - **Allowed:** All pages (no restrictions).
+### 2. **Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
 
-2. **User-Agent: * (All Other Bots)**
-   - **Disallowed Pages:**
-     - `/sureroute-test-object.html`
-     - Any URL ending with `/404.aspx`
-     - Any URL ending with `/500.aspx`
-     - Any URL starting with `/?*` (query parameters)
-     - Any URL ending with `*.aspx?*`
-     - Any URL ending with `*.pdf?*`
-     - URLs containing the following query parameters:
-       - `?country`
-       - `?cpUrl`
-       - `?ens_consent=`
-       - `?tfa_next`
-       - `?rdrsrc=`
-       - `?aspxerrorpath`
-       - `?storytype`
-       - `?persona`
-       - `?custom-tag`
-       - `?id`
-     - URLs containing `/searchresults*`
-     - URLs containing `/studio/tool*`
-     - URLs containing `?expandMenu=true*`
+### 3. **Set Up OpenAI API Key**
+Create a `.env` file in the project directory:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-   - **Allowed Pages:**
-     - JavaScript files: `/Scripts/*.js?*`
-     - CSS files: `/Content/*.css?*`
-     - Global JavaScript files: `/kone/global/*.js?*`
-     - Any URL with `?v=*`
-     - Any URL with `?&page=*`
+### 4. **Run the Web Application**
+```bash
+python app.py
+```
 
-3. **Sitemap:**
-   - The sitemap is located at: `https://www.kone.fi/sitemap.xml`
-
-### Important Notes:
-- Swiftbot has no restrictions and can access all content.
-- All other user agents are heavily restricted from accessing specific pages and query parameters, which helps control the crawling and indexing behavior on the site.
-==================================================
+### 5. **Open Your Browser**
+Navigate to: `http://localhost:5000`
 
 ---
 
-## Notes
+## How to Use
 
-- This tool is for educational and research purposes.
-- Always respect website owners' wishes as expressed in their `robots.txt` files.
-- For more info, see [robots.txt documentation](https://www.robotstxt.org/).
+1. **Enter a Website URL** (e.g., `www.example.com`)
+2. **Click "Analyze robots.txt"** or press `Enter`
+3. **View Results** in the three panels:
+   - **Left**: Input controls and status
+   - **Middle**: Raw robots.txt content
+   - **Right**: AI-powered analysis with insights
+
+---
+
+## Technical Details
+
+### **Backend**
+- **Flask**: Modern Python web framework
+- **OpenAI API**: GPT models for intelligent analysis
+- **Requests**: HTTP client for fetching robots.txt files
+- **Python-dotenv**: Environment variable management
+
+### **Frontend**
+- **HTML5**: Semantic markup
+- **CSS3**: Modern styling with CSS Grid and Flexbox
+- **JavaScript**: Async/await for smooth user experience
+- **Responsive Design**: Mobile-first approach
+
+### **Architecture**
+- **Modular Design**: Separated concerns between analysis and web interface
+- **Error Handling**: Comprehensive error handling and user feedback
+- **Type Hints**: Full Python type annotations for maintainability
+
+---
+
+## Project Structure
+
+```
+robots-txt-ai-analyzer/
+├── app.py                 # Flask web application
+├── analyzer.py  # Core robots.txt analysis logic
+├── templates/
+│   └── index.html        # Modern web interface
+├── requirements.txt       # Python dependencies
+├── .env                  # Environment variables (create this)
+└── README.md            # This file
+```
