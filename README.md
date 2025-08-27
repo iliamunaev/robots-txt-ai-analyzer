@@ -4,22 +4,6 @@ A web application that fetches and intelligently analyzes any website's `robots.
 
 ---
 
-## Features
-
-- ** Web Interface**: Clean, modern web app accessible from any browser
-- ** Responsive Design**: Works perfectly on desktop, tablet, and mobile
-- ** AI-Powered Analysis**: Structured, human-readable explanations using OpenAI GPT
-- ** Beautiful UI**: Dark theme with smooth animations and professional styling
-- ** Three-Window Layout**:
-  - Input panel for website URLs
-  - Raw robots.txt content display
-  - Formatted AI analysis with insights
-- ** Real-time Analysis**: Instant results with loading states
-- ** Copy Functionality**: Easy copying of both robots.txt content and AI analysis
-- ** URL Memory**: Remembers your last analyzed website
-
----
-
 ## Quick Start
 
 ### 1. **Clone the Repository**
@@ -63,23 +47,10 @@ Navigate to: `http://localhost:5000`
 ## Technical Details
 
 ### **Backend**
-- **Flask**: Modern Python web framework
-- **OpenAI API**: GPT models for intelligent analysis
-- **Requests**: HTTP client for fetching robots.txt files
-- **Python-dotenv**: Environment variable management
+- Python, Flask, OpenAI API, Requests, Python-dotenv
 
 ### **Frontend**
-- **HTML5**: Semantic markup
-- **CSS3**: Modern styling with CSS Grid and Flexbox
-- **JavaScript**: Async/await for smooth user experience
-- **Responsive Design**: Mobile-first approach
-
-### **Architecture**
-- **Modular Design**: Separated concerns between analysis and web interface
-- **Error Handling**: Comprehensive error handling and user feedback
-- **Type Hints**: Full Python type annotations for maintainability
-
----
+- simple MVP
 
 ## Project Structure
 
