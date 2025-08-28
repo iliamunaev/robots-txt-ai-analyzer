@@ -1,7 +1,6 @@
 import requests
 from openai import OpenAI
 from dotenv import load_dotenv
-import os
 from urllib.parse import urljoin, urlparse
 from typing import Optional
 
@@ -74,7 +73,6 @@ def analyze_robots_txt(content: str, model: str = "gpt-4o-mini") -> Optional[str
         "IMPORTANT: Use the exact HTML-like format above. Be conversational and helpful, not technical. "
         "Explain things in simple terms that non-technical people can understand."
     )
-
 
     try:
         client = OpenAI()
